@@ -1,0 +1,131 @@
+<html>
+<head>
+	<style type="text/css">
+	text {
+		font-family: sans-serif;
+		font-size: 12px;
+		fill: white;
+	}
+	#tooltip {
+		position: absolute;
+		width: 200px;
+		height: auto;
+		padding: 10px;
+		background-color: white;
+		-webkit-border-radius: 10px;
+		-moz-border-radius: 10px;
+		border-radius: 10px;
+		-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+		-mox-box-shadow: 4px 4px 4px 10px rgba(0, 0, 0, 0.4);
+		box-shadow: 4px 4px 10px rbga(0, 0, 0, 0.4) pointer-events: none;
+	}
+	#tooltip.hidden {
+		opacity: 0;
+	}
+	#tooltip p {
+		margin: 0;
+		font-family: sans-serif;
+		font-size: 16px;
+		line-height: 20px;
+	}
+	</style>
+</head>
+<body>
+	<div id="tooltip" class="hidden">
+		<p><span id="name">100</span></p>
+		<p><span id="value">100</span>%</p>
+	</div>
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script>
+	const draw = (dataset) => {
+		
+  //Width and height
+  const w = 300;
+  const h = 300;
+
+  const outerRadius = w / 2;
+  const innerRadius = 0;
+  const arc = d3.svg.arc()
+  .innerRadius(innerRadius)
+  .outerRadius(outerRadius);
+
+  const pie = d3.layout.pie()
+  .value(d => d.value);
+
+  // Easy colors accessible via a 10-step ordinal scale
+  const color = d3.scale.category10();
+
+  // Create SVG element
+  const svg = d3.select("body")
+  .append("svg")
+  .attr("width", w)
+  .attr("height", h);
+
+  // Set up groups
+  const arcs = svg.selectAll("g.arc")
+  .data(pie(dataset))
+  .enter()
+  .append("g")
+  .attr("class", "arc")
+  .attr("transform", `translate(${outerRadius},${outerRadius})`)
+  .on("mouseover", d => {
+  	console.log(d);
+  	d3.select("#tooltip")
+  	.style("left", `${d3.event.pageX}px`)
+  	.style("top", `${d3.event.pageY}px`)
+  	.style("opacity", 1)
+  	.select("#name")
+  	.text(d.data.name);
+  	d3.select("#tooltip")
+  	.select("#value")
+  	.text(d.value);
+  })
+  .on("mouseout", () => {
+      // Hide the tooltip
+      d3.select("#tooltip")
+      .style("opacity", 0);
+    });
+
+  // Draw arc paths
+  arcs.append("path")
+  .attr("fill", (d, i) => color(i))
+  .attr("d", arc);
+
+  // Labels
+  arcs.append("text")
+  .attr("transform", d => `translate(${arc.centroid(d)})`)
+  .attr("text-anchor", "middle")
+  .text(d => d.value);
+}
+
+dataset = [ {
+	name: "nameA",
+	value: 5
+},
+{
+	name: "nameB",
+	value: 10
+},
+{
+	name: "nameC",
+	value: 20
+},
+{
+	name: "nameD",
+	value: 45
+},
+{
+	name: "nameE",
+	value: 6
+},
+{
+	name: "nameF",
+	value: 25
+}
+];
+
+draw(dataset);
+
+</script>
+</body>
+</html>
