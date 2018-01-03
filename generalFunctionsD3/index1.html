@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.3/d3.min.js"></script>
+  <meta charset="utf-8">
+  <title>d3 min, max, extent, sort</title>
+</head>
+<body>
+
+<script>
+  var d1 = [10,5,20,30];
+
+  var d2 = [
+  {"id":"1", "value":10},
+  {"id":"2", "value":5},
+  {"id":"3", "value":20},
+  {"id":"4", "value":30}
+  ];
+  
+  console.log("min = " + d3.min(d1));
+  console.log("max = " + d3.max(d1));
+  console.log("extent = " + d3.extent(d1));
+  console.log("sort = " + d1.sort(d3.ascending));
+
+  let max = 0;
+  for(let i = 0; i < d2.length; i++) {
+    if(d2[i].value > max) {
+      max = d2[i].value;
+    }
+  }
+  console.log(max)
+
+  // usando d3
+  console.log( d3.max(d2.map(function(d){return d.value;})) );
+   
+</script>
+  
+</body>
+</html>

@@ -1,0 +1,37 @@
+1> d3: object of d3.js
+2> d3.select("p"): select a dom elment.
+3> d3.append("p"): append the elements in the dom.
+4> d3.append().text(): append the elements in the dom with some text.
+5> SVG: for 2D graphics in dom.
+6> style(): to change styles.
+7> attr(): to change attributes (for styling the svg elements).
+
+IMPORTANT:
+
+8> create a circle in svg:
+    
+	// create a svg element first and assign it to a variable.   
+	const circle = canvas.append("circle")
+						 .attr("cx", 250) // for position of circle horizontally in d3
+						 .attr("cy", 250) // for position of circle vertically in d3
+						 .attr("r", 50) // for radius of circle
+						 .attr("fill", "red"); // to fill the circle with any color
+
+9> create a rectangle in svg:
+	
+	// create a svg element first and assign it to a variable.   
+	const rectangle = canvas.append("rect")
+						 .attr("width", 100) // for width of rect
+						 .attr("height", 50); // for height of rect
+
+10> create a line in svg:
+	
+	// create a svg element first and assign it to a variable.   
+	const line = canvas.append("line")
+						 .attr("x1", 0) 
+						 .attr("y1", 100) 
+						 .attr("x2", 400) 
+						 .attr("y2", 400)
+						 .attr("stroke", "green")
+						 .attr("stroke-width", 10); 
+

@@ -1,0 +1,16 @@
+// Create a bar chat
+
+const dataset = [20, 40, 50];
+
+const canvas = d3.select("body")
+		 .append("svg"
+		 .attr("width", 500)
+		 .attr("height", 500);
+
+const bars = canvas.selectAll("rect") // return the array of all rect tags (initially 0 if no tag present)
+		   .data(dataArray)	// bind data to tags
+		   .enter()		// create rect tags for data element for which there is no tag present
+			.append("rect")	// create rect tags for data element for which there is no tag present
+			.attr("width", d => d*10) // set width of bar
+			.attr("height", 50)	  // set height of bar
+			.attr("y", (d, i) => i*100);	// vertical position of each bar
