@@ -1,0 +1,27 @@
+// create a path(line)
+
+const canvas = d3.select("body").append("svg")	
+			   		.attr("width", 500)
+					.attr("height", 500);
+
+const data = [            // data for line
+		{ x: 10, y: 20 },
+		{ x: 40, y: 60 },
+		{ x: 50, y: 70 }
+	];
+
+const group = canvas.append("g")    // g tag created
+	.attr("transfor", "translate(100, 100)");
+	
+const line = d3.svg.line()   // create the line points
+	.x( d => d.x)
+	.y( d => d.y); 
+		
+group.selectAll("path") // create a path group with data  
+	.data([data])
+	.enter()
+	.append("path")
+	.attr("d", line)
+	.attr("fill", "none")
+	.attr("stroke", "#ooo")
+	.attr("stroke-width", 10);
