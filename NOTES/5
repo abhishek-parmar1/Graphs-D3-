@@ -1,0 +1,12 @@
+Transitions in d3
+
+// create a svg and append a circle in it and assign it to a variable
+
+circle.transition()   // setting the transition property
+	.duration(1500)   // duration for transition 	
+	.attr("cx", 150)  // slide x cordinate of circle
+	.transition()     // transition inside transition
+	.attr("cy", 200)
+	.transition()
+	.attr("cx", 50)
+	.each("end", () => { d3.select(this).attr("fill", "red"); } ); // event listener for transitions "start" or "end" ...
