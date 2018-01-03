@@ -2,15 +2,27 @@
 
 const dataset = [20, 40, 50];
 
+const width = 500;
+const height = 500;
+
+const widthScale = d3.scale.linear() 		// set the scale for width
+				   .domain([0, 60])  		// domain of data [min,  max]
+				   .range([0, width]); 		// range defines the area in which the domain needs to be fit
+
+const color	= d3.scale.linear() 			// set scale for color
+			  .domain([0, 60]) 				// domain of data [min, max]
+			  .range(["red", "blue"]);		// towards low value gives red color and towards high value give blue color 	
+
 const canvas = d3.select("body")
 		 .append("svg"
-		 .attr("width", 500)
-		 .attr("height", 500);
+		 .attr("width", width)
+		 .attr("height", height);
 
-const bars = canvas.selectAll("rect") // return the array of all rect tags (initially 0 if no tag present)
-		   .data(dataArray)	// bind data to tags
-		   .enter()		// create rect tags for data element for which there is no tag present
-			.append("rect")	// create rect tags for data element for which there is no tag present
-			.attr("width", d => d*10) // set width of bar
-			.attr("height", 50)	  // set height of bar
+const bars = canvas.selectAll("rect") 		// return the array of all rect tags (initially 0 if no tag present)
+		   .data(dataArray)					// bind data to tags
+		   .enter()							// create rect tags for data element for which there is no tag present
+			.append("rect")					// create rect tags for data element for which there is no tag present
+			.attr("width", d => widthScale(d) ) // set width of bar according to its scale
+			.attr("height", 50)	  			// set height of bar
+			.attr("fill", d => color(d) )	// return color according to scale
 			.attr("y", (d, i) => i*100);	// vertical position of each bar
