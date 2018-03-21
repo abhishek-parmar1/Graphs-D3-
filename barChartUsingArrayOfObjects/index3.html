@@ -211,7 +211,7 @@
         .rangeRound([0, width])
         .padding(0.1);
       
-      // y axis scale
+      // y axis scale (NOTE: height range starts from 100 to 0)
       y = d3.scaleLinear()
         .domain([0, 100])
         .rangeRound([height, 0]);
@@ -292,7 +292,9 @@
 
       // for animation
       bar.transition()
+        // height - y(d.per) => because height range is in reverse order
         .attr('height', d => height - y(d.per))
+        // y(d.per) => because height range is in reverse order
         .attr('y', d => y(d.per))
         .delay((d, i) => i * 20)
         .duration(1000)
