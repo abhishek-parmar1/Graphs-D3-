@@ -1,0 +1,251 @@
+  <html>
+  <head>
+    <style type="text/css">
+      .axis--x .tick{
+        visibility: hidden;
+      }
+      svg {
+        padding: 10px 40px
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Index 3</h1>
+      <div class="tooltip">
+      </div>
+    <div id="viz">
+      <svg width="960" height="500"></svg>
+    </div>
+  </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
+    <script>
+    // dummy data
+    const data1 = [
+      {
+        per: 10,
+        name: 'dummy1'
+      },
+      {
+        per: 20,
+        name: 'dummy2'
+      },
+      {
+        per: 30,
+        name: 'dummy3'
+      },
+      {
+        per: 40,
+        name: 'dummy4'
+      },
+      {
+        per: 50,
+        name: 'dummy5'
+      },
+      {
+        per: 60,
+        name: 'dummy6'
+      },
+      {
+        per: 70,
+        name: 'dummy7'
+      },
+      {
+        per: 80,
+        name: 'dummy8'
+      },
+      {
+        per: 90,
+        name: 'dummy9'
+      },
+      {
+        per: 100,
+        name: 'dummy10'
+      }
+    ];
+      
+    const data2 = [
+      {
+        per: 100,
+        name: 'dummy11'
+      },
+      {
+        per: 90,
+        name: 'dummy12'
+      },
+      {
+        per: 80,
+        name: 'dummy13'
+      },
+      {
+        per: 70,
+        name: 'dummy14'
+      },
+      {
+        per: 60,
+        name: 'dummy15'
+      },
+      {
+        per: 50,
+        name: 'dummy16'
+      },
+      {
+        per: 40,
+        name: 'dummy17'
+      },
+      {
+        per: 30,
+        name: 'dummy18'
+      },
+      {
+        per: 20,
+        name: 'dummy19'
+      },
+      {
+        per: 10,
+        name: 'dummy20'
+      },
+      {
+        per: 10,
+        name: 'dummy21'
+      },
+      {
+        per: 20,
+        name: 'dummy22'
+      },
+      {
+        per: 30,
+        name: 'dummy23'
+      },
+      {
+        per: 40,
+        name: 'dummy24'
+      },
+      {
+        per: 50,
+        name: 'dummy25'
+      }
+    ];  
+      
+    const createBarGraph = (data) => {
+      
+      let svg,
+          g,
+          x,
+          y,
+          bar,
+          colors,
+          tooltip;
+
+      svg = d3.select("svg"),
+      padding = {top: 10, right: 40, bottom: 10, left: 40},
+      width = +svg.attr("width") - padding.left - padding.right,
+      height = +svg.attr("height") - padding.top - padding.bottom;
+      
+      // colors selection
+      colors = d3.schemeCategory20;
+      
+      // x axis scale
+      x = d3.scaleBand()
+        .domain(data.map( d => d.name))
+        .rangeRound([0, width])
+        .padding(0.1);
+      
+      // y axis scale
+      y = d3.scaleLinear()
+        .domain([0, 100])
+        .rangeRound([height, 0]);
+      
+      // x axis
+      if(svg.select(".axis--x").empty()) {
+        svg.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));  
+      }
+      
+      // y axis
+      if(svg.select(".axis--y").empty()) {
+        svg.append("g")
+        .attr("class", "axis axis--y")
+        .call(d3.axisLeft(y).ticks(10).tickFormat(d => d + '%'));  
+      }
+      
+      // tooltip
+      tooltip = d3.select('.tooltip')
+        .style('position', 'absolute')
+        .style('padding', '0 10px')
+        .style('background', 'white')
+        .style('opacity', 0);
+      
+      // bars selection
+      bar = svg.selectAll(".bar")
+        .data(data);
+      
+      // update section
+      bar.attr("class", "bar")
+        .attr("x", d => x(d.name))
+        .attr("y", d => y(d.per))
+        .attr("width", x.bandwidth())
+        .attr("height", 0)
+        .attr('x', d => x(d.name))
+        .attr('y', height)
+        .attr("fill", (d, i) => i >= colors.length ? colors[i - colors.length] : colors[i]);
+      
+      // delete section
+      bar.exit().remove();
+      
+      // create section
+      bar = bar.enter().append("rect")
+       .merge(bar)
+         .attr("class", "bar")
+         .attr("x", d => x(d.name))
+         .attr("y", d => y(d.per))
+         .attr("width", x.bandwidth())
+         .attr("height", 0)
+         .attr('x', d => x(d.name))
+         .attr('y', height)
+         .attr("fill", (d, i) => i >= colors.length ? colors[i - colors.length] : colors[i])
+           .on('mouseover', function(d, i) {
+             tooltip.transition()
+               .duration(200)
+               .style('opacity', .9);
+             tooltip.html('<strong>' + d.name + '</strong>')
+               .style('left', (d3.event.pageX ) + 'px')
+               .style('top', (d3.event.pageY -30) + 'px');
+             d3.select(this)
+               .style('fill-opacity', 0.7);
+           })
+           .on('mousemove', function(d, i) {
+             tooltip.transition()
+               .duration(200)
+               .style('opacity', .9);
+             tooltip.html('<strong>' + d.name + '</strong>')
+               .style('left', (d3.event.pageX ) + 'px')
+               .style('top', (d3.event.pageY -30) + 'px');
+           })
+           .on('mouseout', function(d) {
+             tooltip.html('');
+             d3.select(this)
+               .style('fill-opacity', 1);
+           });
+
+      // for animation
+      bar.transition()
+        .attr('height', d => height - y(d.per))
+        .attr('y', d => y(d.per))
+        .delay((d, i) => i * 20)
+        .duration(1000)
+        .ease(d3.easeBounceOut);
+      
+    };
+      
+    createBarGraph(data1); 
+    createBarGraph(data2);
+    createBarGraph(data1);
+    createBarGraph(data2);
+    createBarGraph(data1);
+
+    </script>
+  </body>
+  </html>
