@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+ 
+body {
+  font: 10px sans-serif;
+}
+ 
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+ 
+.bar {
+  fill: steelblue;
+}
+ 
+.x.axis path {
+  display: none;
+}
+ 
+</style>
+<body>
+<script src="http://d3js.org/d3.v4.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script>
+  
+// function input : columns representation   
+var innerColumns = {
+  "column1" : ["onTime","offTime"],
+  "column2" : ["evaluation"]
+}
+
+// function input : colors representing array 
+let colors = ["green", "red", "yellow"];  
+
+// function input : data
+ data = [
+  {
+    "batchName": "Batch1",
+    "onTime": "71.42857142857143",
+    "offTime": "0",
+    "evaluation": "100",
+  },
+  {
+    "batchName": "Batch2",
+    "onTime": "81.25",
+    "offTime": "18.75",
+    "evaluation": "100",
+  },
+  {
+    "batchName": "Batch3",
+    "onTime": "100",
+    "offTime": "0",
+    "evaluation": "100",
+  },
+  {
+    "batchName": "Batch4",
+    "onTime": " 29.166666666666668",
+    "offTime": "41.66666666666667",
+    "evaluation": "100",
+  },
+  {
+    "batchName": "Batch5",
+    "onTime": "43.75",
+    "offTime": "56.25",
+    "evaluation": "93.75",
+  },
+  {
+    "batchName": "Batch6",
+    "onTime": "93.75",
+    "offTime": "6.25",
+    "evaluation": "100",
+  },
+  {
+    "batchName": "Batch7",
+    "onTime": "100",
+    "offTime": "0",
+    "evaluation": "100",
+  },
+   {
+    "batchName": "Batch8",
+    "onTime": "43.75",
+    "offTime": "56.25",
+    "evaluation": "93.75",
+  },
+  {
+    "batchName": "Batch9",
+    "onTime": "93.75",
+    "offTime": "6.25",
+    "evaluation": "100",
+  },
+  {
+    "batchName": "Batch10",
+    "onTime": "100",
+    "offTime": "0",
+    "evaluation": "100",
+  }
+];
+  
+var margin = {top: 20, right: 60, bottom: 30, left: 40},
+    width = 1000 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+  
+// outer x axis scale and domain  
+var x0 = d3.scaleBand()
+    .rangeRound([0, width])
+    .padding(0.1)
+    .domain(data.map(d => d.batchName ));
+    
+// inner x axis scale and domain
+var x1 = d3.scaleBand()
+    .rangeRound([0, x0.bandwidth()])
+    .domain(Object.keys(innerColumns));
+  
+// y axis scale  
+var y = d3.scaleLinear()
+    .range([height, 0]);
+ 
+// create outer x axis  
+var xAxis = d3.axisBottom(x0);
+
+// create y axis   
+var yAxis = d3.axisLeft(y)
+    .tickFormat(d3.format(".2s"));
+
+// create colors scale  
+var color = d3.scaleOrdinal()
+    .range(colors);
+ 
+// add svg to body  
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+ 
+var yBegin;
+ 
+
+  
+  // get all the columns representation value
+  var columnHeaders = Object.keys(data[0]).filter(k => k !== "batchName");
+  
+  // map the color for the domain
+  color.domain(Object.keys(data[0]).filter(k => k !== "batchName"));
+  
+  // formating the data to represent and adding the new attributes for data representation
+  data.forEach(function(d) {
+    var yColumn = new Array();
+    
+    d.columnDetails = columnHeaders.map(name => {
+      for (ic in innerColumns) {
+        
+        if(innerColumns[ic].indexOf(name) !== -1){
+          if (!yColumn[ic]){
+            yColumn[ic] = 0;
+          }
+          
+          yBegin = yColumn[ic];
+          yColumn[ic] += +d[name];
+          
+          return {
+            name: name,
+            column: ic,
+            yBegin: yBegin,
+            yEnd: +d[name] + yBegin
+          };
+        }
+      }
+    });
+    
+    d.total = Math.max(...d.columnDetails.map(c => c.yEnd));
+  });
+ 
+  // domain for y axis
+  y.domain([0, Math.max(...data.map(d => d.total))]);
+ 
+  // create x axis 
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+ 
+  // create y axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".7em")
+      .style("text-anchor", "end")
+      .text("");
+ 
+  var project_stackedbar = svg.selectAll(".project_stackedbar")
+      .data(data)
+    .enter().append("g")
+      .attr("class", "project_stackedbar")
+      .attr("transform", d => "translate(" + x0(d.batchName) + ",0)");
+ 
+  var rect = project_stackedbar.selectAll("rect")
+      .data(d => console.log(d.columnDetails) || d.columnDetails)
+    .enter().append("rect")
+      .attr("width", x1.bandwidth())
+      .attr("x", d => x1(d.column))
+      .attr("y", d => y(d.yBegin))
+      .attr("height", 0)
+      .style("fill", d => color(d.name));
+  
+  rect.transition()
+    .attr('height', d => y(d.yBegin) - y(d.yEnd))
+    .attr('y', d => y(d.yEnd))
+    .delay((d, i) => i * 750)
+    .duration(1000);
+ 
+  var legend = svg.selectAll(".legend")
+      .data(columnHeaders)
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", (d, i) => "translate(40," + i * 20 + ")");
+ 
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+ 
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(d => d);
+ 
+ 
+</script>
